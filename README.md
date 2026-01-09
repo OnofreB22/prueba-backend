@@ -1,98 +1,357 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+#  Prueba Técnica – API de Productos (NestJS + PostgreSQL)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API REST para gestión de **productos** desarrollada con **NestJS**, **TypeORM** y **PostgreSQL**.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+***
 
-## Description
+##  Descripción del Proyecto
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Este proyecto implementa un servicio backend que expone una API REST para la administración de una entidad `Productos`, incluyendo operaciones completas de **CRUD**:
 
-## Project setup
+- Crear producto
+- Listar productos
+- Obtener detalle de un producto
+- Actualizar producto
+- Eliminar producto
 
-```bash
-$ npm install
-```
+La aplicación está construida con **NestJS** y se conecta a una base de datos **PostgreSQL** utilizando **TypeORM** como ORM. Se aplican **validaciones con DTOs**, manejo de errores y buenas prácticas de estructuración en módulos.
 
-## Compile and run the project
+***
 
-```bash
-# development
-$ npm run start
+## Stack Tecnológico
 
-# watch mode
-$ npm run start:dev
+- **Lenguaje**: Node.js / TypeScript
+- **Framework**: NestJS
+- **ORM**: TypeORM
+- **Base de datos**: PostgreSQL
+- **Contenedores**: Docker + Docker Compose
+- **Validaciones**: class-validator / class-transformer
+- **Configuración**: Variables de entorno (`.env`)
 
-# production mode
-$ npm run start:prod
-```
+***
 
-## Run tests
+## Arquitectura y Diseño
+
+La estructura principal del proyecto es:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+src/
+├── app.module.ts
+├── main.ts
+└── productos/
+    ├── dto/
+    │   ├── create-producto.dto.ts
+    │   ├── update-producto.dto.ts
+    │   └── producto-id.dto.ts
+    ├── entities/
+    │   └── producto.entity.ts
+    ├── productos.controller.ts
+    ├── productos.module.ts
+    └── productos.service.ts
 ```
 
-## Deployment
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### Entidad `Producto`
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+La entidad `Producto` se mapea a la tabla `productos` en PostgreSQL con los siguientes campos:
+
+- `id`: UUID, PK, generado automáticamente
+- `nombre`: string, longitud máxima 255
+- `precio`: decimal (precision 10, scale 2)
+- `stock`: entero (int)
+- `createdAt`: timestamp, se asigna automáticamente
+- `updatedAt`: timestamp, se actualiza automáticamente en cada modificación
+
+
+### Módulos y Capas
+
+- **Controller (`productos.controller.ts`)**
+Expone los endpoints REST y recibe/retorna DTOs.
+- **Service (`productos.service.ts`)**
+Contiene la lógica de negocio, interacción con el repositorio TypeORM y manejo de errores de dominio.
+- **Entity (`producto.entity.ts`)**
+Mapea la estructura de la tabla en la base de datos.
+- **DTOs (`dto/*.ts`)**
+Definen la forma y validaciones de datos de entrada (body, params).
+
+***
+
+##  Requerimientos
+
+Antes de ejecutar el proyecto, necesitas:
+
+- Node.js (versión LTS recomendada)
+- npm
+- Docker y Docker Compose
+
+
+***
+
+## Puesta en Marcha
+
+### 1. Clonar el Repositorio
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+git clone https://github.com/oabenjumev/productos-api.git
+cd productos-api
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
 
-## Resources
+### 2. Instalar Dependencias
 
-Check out a few resources that may come in handy when working with NestJS:
+```bash
+npm install
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
 
-## Support
+### 3. Configurar Variables de Entorno
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+El proyecto incluye un archivo de ejemplo `.env.example`. Para comenzar:
 
-## Stay in touch
+```bash
+cp .env.example .env
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Variables disponibles:
 
-## License
+```env
+# Database Configuration
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASS=postgres123
+DB_NAME=productos_db
+DB_SYNC=true
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+> Nota: `DB_SYNC=true` facilita el desarrollo al sincronizar el esquema automáticamente. En producción se recomienda `false`.
+
+### 4. Levantar PostgreSQL con Docker
+
+```bash
+docker-compose up -d
+```
+
+Esto crea un contenedor llamado `productos-db` con PostgreSQL y la base de datos configurada según las variables definidas.
+
+### 5. Ejecutar la Aplicación
+
+```bash
+npm run start:dev
+```
+
+La API estará disponible en:
+
+```text
+http://localhost:3000
+```
+
+
+***
+
+## Endpoints Disponibles
+
+La API expone los siguientes endpoints para la entidad `Productos` bajo el prefijo `/productos`.
+
+### Estructura de la Entidad
+
+```json
+{
+  "id": "uuid",
+  "nombre": "string",
+  "precio": 123.45,
+  "stock": 10,
+  "createdAt": "2026-01-08T21:31:00.000Z",
+  "updatedAt": "2026-01-08T21:31:00.000Z"
+}
+```
+
+
+### Crear Producto
+
+**POST** `/productos`
+
+**Body (JSON):**
+
+```json
+{
+  "nombre": "Laptop HP",
+  "precio": 1500.50,
+  "stock": 10
+}
+```
+
+**Respuestas:**
+
+- `201 Created`: Producto creado correctamente
+- `400 Bad Request`: Error de validación en los datos de entrada
+
+***
+
+### Listar Productos
+
+**GET** `/productos`
+
+**Respuestas:**
+
+- `200 OK`: Lista de productos (puede estar vacía)
+
+***
+
+### Obtener Producto por ID
+
+**GET** `/productos/:id`
+
+Parámetros:
+
+- `id`: UUID del producto
+
+**Respuestas:**
+
+- `200 OK`: Producto encontrado
+- `400 Bad Request`: ID no es un UUID válido
+- `404 Not Found`: No existe un producto con ese ID
+
+***
+
+### Actualizar Producto
+
+**PATCH** `/productos/:id`
+
+**Body (JSON, todos los campos opcionales):**
+
+```json
+{
+  "nombre": "Nuevo nombre",
+  "precio": 1200.00,
+  "stock": 5
+}
+```
+
+**Respuestas:**
+
+- `200 OK`: Producto actualizado
+- `400 Bad Request`: Error de validación o ID inválido
+- `404 Not Found`: Producto no encontrado
+
+***
+
+### Eliminar Producto
+
+**DELETE** `/productos/:id`
+
+**Respuestas:**
+
+- `204 No Content`: Producto eliminado
+- `400 Bad Request`: ID inválido
+- `404 Not Found`: Producto no encontrado
+
+***
+
+##  Validaciones Implementadas
+
+Las validaciones se realizan mediante DTOs y `class-validator` + `class-transformer`.
+
+### CreateProductoDto
+
+- `nombre`
+    - Requerido
+    - String
+    - Mínimo 3 caracteres
+    - Máximo 255 caracteres
+    - Se hace `trim()` automático
+- `precio`
+    - Requerido
+    - Número
+    - Máximo 2 decimales
+    - Mayor que 0
+    - Límite superior configurado
+- `stock`
+    - Requerido
+    - Entero
+    - Mayor o igual a 0
+    - Límite superior configurado
+
+
+### UpdateProductoDto
+
+- Mismos campos que `CreateProductoDto` pero todos **opcionales**
+- Permite actualizaciones parciales (PATCH)
+
+
+### ProductoIdDto
+
+- `id`
+    - Requerido en rutas que usan `:id`
+    - Debe ser un UUID versión 4 válido
+
+
+### ValidationPipe Global
+
+Se usa un `ValidationPipe` global configurado para:
+
+- `whitelist: true`: elimina propiedades no declaradas en los DTOs
+- `forbidNonWhitelisted: true`: lanza error si se envían propiedades extra
+- `transform: true`: transforma tipos primitivos (por ejemplo, strings numéricos a number)
+
+Adicionalmente, se implementa un filtro de excepciones para unificar el formato de errores de validación.
+
+***
+
+## Manejo de Errores
+
+- **Errores de validación**: respuesta con detalles de campos inválidos.
+- **Recurso no encontrado**: se lanza `NotFoundException` en el servicio cuando un producto no existe.
+- **Errores de base de datos**: delegados al comportamiento estándar de NestJS / TypeORM, que pueden extenderse con filtros personalizados.
+
+***
+
+## Cómo Probar Rápidamente (Ejemplos)
+
+### Crear un producto
+
+```bash
+curl -X POST http://localhost:3000/productos \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nombre": "Laptop HP",
+    "precio": 1500.50,
+    "stock": 10
+  }'
+```
+
+
+### Listar productos
+
+```bash
+curl http://localhost:3000/productos
+```
+
+
+### Obtener producto por ID
+
+```bash
+curl http://localhost:3000/productos/<uuid>
+```
+
+
+### Actualizar producto
+
+```bash
+curl -X PATCH http://localhost:3000/productos/<uuid> \
+  -H "Content-Type: application/json" \
+  -d '{
+    "precio": 1400.00,
+    "stock": 8
+  }'
+```
+
+
+### Eliminar producto
+
+```bash
+curl -X DELETE http://localhost:3000/productos/<uuid>
+```
+
+
+***

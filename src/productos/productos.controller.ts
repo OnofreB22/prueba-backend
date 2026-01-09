@@ -8,10 +8,13 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ProductosService } from './productos.service';
 import { CreateProductoDto } from './dto/create-producto.dto';
 import { UpdateProductoDto } from './dto/update-producto.dto';
+import { ProductoIdDto } from './dto/producto-id.dto';
 
 @Controller('productos')
 export class ProductosController {
@@ -19,6 +22,7 @@ export class ProductosController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @UsePipes(new ValidationPipe({ transform: true }))
   create(@Body() createProductoDto: CreateProductoDto) {
     return this.productosService.create(createProductoDto);
   }
@@ -29,18 +33,23 @@ export class ProductosController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.productosService.findOne(id);
+  findOne(@Param() params: ProductoIdDto) {
+    return this.productosService.findOne(params.id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductoDto: UpdateProductoDto) {
-    return this.productosService.update(id, updateProductoDto);
+  @UsePipes(new ValidationPipe({ transform: true, skipMissingProperties: true }))
+  update(
+    @Param() params: ProductoIdDto,
+    @Body() updateProductoDto: UpdateProductoDto,
+  ) {
+    return this.productosService.update(params.id, updateProductoDto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: string) {
-    return this.productosService.remove(id);
+  remove(@Param() params: ProductoIdDto) {
+    return this.productosService.remove(params.id);
   }
 }
+
