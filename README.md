@@ -353,5 +353,17 @@ curl -X PATCH http://localhost:3000/productos/<uuid> \
 curl -X DELETE http://localhost:3000/productos/<uuid>
 ```
 
-
 ***
+
+## Pruebas Unitarias
+
+El proyecto incluye **16 test cases** con Jest cubriendo la lógica crítica del negocio.
+
+### Ejecutar pruebas
+
+```bash
+# Ejecutar todas las pruebas
+npm run test
+
+# Ver cobertura de código
+npm run test:cov
